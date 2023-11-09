@@ -27,14 +27,14 @@ def make_recognition(detection_result):
         if detection.categories[0].category_name == PERSON_CLASS_NAME:
             person_detected = True
 
-    if dog_detected and not person_detected and th.can_be_used():
+    if not person_detected and dog_detected and th.can_be_used():
         p.stop()
         p.play()
 
 
 # audio file with your voice
 p = vlc.MediaPlayer(YELLING_MP3)
-th = ths.treshhold(TRESHHOLD_TIME)
+th = ths.treshhold(TRESHHOLD_TIME) #uses treshhold not to spam with audio
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture(MAIN_CAMERA)
