@@ -8,6 +8,9 @@ import treshhold as ths
 # camera you use
 MAIN_CAMERA = 2
 TRESHHOLD_TIME = 60
+DOG_CLASS_NAME = 'dog'
+PERSON_CLASS_NAME = 'person'
+YELLING_MP3 = 'scream.mp3' #should be in the same folder
 
 base_options = python.BaseOptions(model_asset_path='lite-model_efficientdet_lite0_detection_metadata_1.tflite')
 options = vision.ObjectDetectorOptions(base_options=base_options,
@@ -15,25 +18,24 @@ options = vision.ObjectDetectorOptions(base_options=base_options,
 detector = vision.ObjectDetector.create_from_options(options)
 
 
-def do_shit(detection_result):
-    dog_found = False
-    person_found = False
+def make_recognition(detection_result):
+    dog_detected = False
+    person_detected = False
     for detection in detection_result.detections:
-        print(detection.categories[0].category_name)
+        if detection.categories[0].category_name == DOG_CLASS_NAME:
+            dog_detected = True
+        if detection.categories[0].category_name == PERSON_CLASS_NAME:
+            person_detected = True
 
-        if detection.categories[0].category_name == 'dog':
-            dog_found = True
-        if detection.categories[0].category_name == 'person':
-            person_found = True
-
-    if dog_found and not person_found and th.can_be_used():
+    if dog_detected and not person_detected and th.can_be_used():
         p.stop()
         p.play()
 
 
 # audio file with your voice
-p = vlc.MediaPlayer("scream.mp3")
+p = vlc.MediaPlayer(YELLING_MP3)
 th = ths.treshhold(TRESHHOLD_TIME)
+
 if __name__ == '__main__':
     cap = cv2.VideoCapture(MAIN_CAMERA)
     while True:
@@ -43,7 +45,7 @@ if __name__ == '__main__':
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=imgRGB)
 
         detection_result = detector.detect(mp_image)
-        do_shit(detection_result)
+        make_recognition(detection_result)
 
         cv2.imshow("Image", img)
         cv2.waitKey(1)
